@@ -1,9 +1,10 @@
 EE_BIN = JAVAEMU.ELF
-EE_OBJS = src/main.o
-EE_LIBS = -ldebug
+# Procura todos os arquivos .c dentro de src e subpastas
+EE_OBJS = $(patsubst %.c,%.o,$(wildcard src/*.c) $(wildcard src/**/*.c))
+EE_LIBS = -lpad -ldebug -lgraph -ldraw -lpacket -ldma -lm
 
 include $(PS2SDK)/samples/Makefile.pref
 include $(PS2SDK)/samples/Makefile.eeglobal
 
 clean:
-	rm -f src/*.o $(EE_BIN)
+	rm -f src/*.o src/**/*.o $(EE_BIN)
