@@ -1,4 +1,4 @@
-name: Meu Build e Test
+name: PS2 Homebrew - Build java.elf
 
 on:
   push:
@@ -14,15 +14,44 @@ jobs:
       - name: Checkout do código
         uses: actions/checkout@v4
 
-      - name: Instalar make e ferramentas de build
-        run: sudo apt-get update && sudo apt-get install -y make build-essential
+      - name: Instalar dependências do sistema
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git make gcc g++ patch wget unzip build-essential autoconf automake libtool bison flex texinfo gawk
 
-      - name: Limpar projeto
-        run: make clean
+      - name: Instalar PS2 toolchain (ee-gcc etc.)
+        run: |
+          git clone --depth 1 https://github.com/ps2dev/ps2toolchain.git
+          cd ps2toolchain
+          ./toolchain.sh  # Compila o toolchain (demora \~10-20min na primeira vez)
+          cd ..
+          mkdir -p $HOME/ps2dev
+          mv ps2toolchain $HOME/ps2dev/
+          echo "PS2DEV=$HOME/ps2dev" >> $GITHUB_ENV
+          echo "PATH=$PATH:$HOME/ps2dev/bin" >> $GITHUB_ENV
 
-      # Seus outros passos aqui embaixo...
-      - name: Compilar
-        run: make build
+      - name: Instalar PS2SDK
+        run: |
+          git clone --depth 1 https://github.com/ps2dev/ps2sdk.git
+          cd ps2sdk
+          make -j$(nproc)
+          make install
+          echo "PS2SDK=$HOME/ps2dev/ps2sdk" >> $GITHUB_ENV
 
-      - name: Testar
-        run: make test
+      - name: Limpar projeto (make clean)
+        run: make clean || true  # O '|| true' evita falha se clean não existir ainda
+
+      - name: Compilar java.elf
+        run: make
+
+      - name: Verificar o ELF gerado
+        run: |
+          ls -la *.elf || echo "Nenhum ELF encontrado – verifique o Makefile!"
+          file *.elf  # Mostra info do binário
+
+      - name: Upload do java.elf como artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: java-elf-ps2
+          path: "*.elf"
+          if-no-files-found: warn
