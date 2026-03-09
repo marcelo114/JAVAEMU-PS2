@@ -1,17 +1,21 @@
-name: Gerar ELF PS2
-on: [push, workflow_dispatch]
+name: Seu Workflow Legal
+
+on: [push, pull_request]
+
 jobs:
   build:
-    runs-on: ubuntu-latest
-    container: ps2dev/ps2dev:latest
+    runs-on: ubuntu-latest   # ou ubuntu-24.04 / ubuntu-22.04 se quiser fixar
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Compilando
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Instalar make (e build tools se precisar)
         run: |
-          make clean
-          make
-      - name: Baixar ELF
-        uses: actions/upload-artifact@v4
-        with:
-          name: Executavel-PS2
-          path: "*.ELF"
+          sudo apt-get update
+          sudo apt-get install -y make build-essential
+
+      - name: Rodar make clean
+        run: make clean
+
+      # ... seus outros passos (make build, testes, etc.)
