@@ -1,21 +1,28 @@
-name: Seu Workflow Legal
+name: Meu Build e Test
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
-    runs-on: ubuntu-latest   # ou ubuntu-24.04 / ubuntu-22.04 se quiser fixar
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
 
-      - name: Instalar make (e build tools se precisar)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y make build-essential
+      - name: Instalar make e ferramentas de build
+        run: sudo apt-get update && sudo apt-get install -y make build-essential
 
-      - name: Rodar make clean
+      - name: Limpar projeto
         run: make clean
 
-      # ... seus outros passos (make build, testes, etc.)
+      # Seus outros passos aqui embaixo...
+      - name: Compilar
+        run: make build
+
+      - name: Testar
+        run: make test
