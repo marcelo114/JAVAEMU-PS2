@@ -1,1 +1,28 @@
-int main() { return 0; }
+#include <stdio.h>
+#include <tamtypes.h>
+#include <kernel.h>
+#include <sifrpc.h>
+#include <debug.h>
+
+// Função principal - roda no EE
+int main(int argc, char **argv)
+{
+    // Inicializa RPC para IOP (necessário para printf em alguns casos)
+    SifInitRpc(0);
+
+    // Inicializa debug (para printf ir para tela ou serial)
+    init_scr();
+
+    // Mensagem simples
+    scr_printf("Hello from PS2 Homebrew!\n");
+    scr_printf("This is java.elf running on Emotion Engine.\n");
+    scr_printf("Press any button or reset to exit...\n");
+
+    // Loop infinito para manter o programa rodando (típico em PS2 homebrew simples)
+    while(1) {
+        // Pode adicionar leitura de controle aqui no futuro
+        SleepThread();
+    }
+
+    return 0;
+}
