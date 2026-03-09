@@ -1,0 +1,5 @@
+#include <stdio.h>
+int main() {
+    printf("Sistema de Sobral Iniciado!\n");
+    return 0;
+}
