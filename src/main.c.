@@ -1,5 +1,0 @@
-#include <stdio.h>
-int main() {
-    printf("Emulador Java PS2 Iniciado!\n");
-    return 0;
-}
